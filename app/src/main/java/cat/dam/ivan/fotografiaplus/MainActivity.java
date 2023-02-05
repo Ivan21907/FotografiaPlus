@@ -36,14 +36,6 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity
 {
 
-    //Cridem la llibreria per el filtre
-    /*static
-    {
-        System.loadLibrary("NativeImageProcessor");
-    }*/
-
-    //public static String colors;
-
     String currentPhotoPath;
     ImageView iv_imatge;
     Button btn_foto, btn_galeria, btn_rotar, btn_filtre, btn_save;
@@ -134,43 +126,33 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        /*btn_save.setOnClickListener(v -> {
-            if(checkPermissions())
-            {
-                saveImage();
-            } else {
-                askForPermissions();
-            }
-        });*/
-
     }
 
     private void filterPicture()
     {
-        iv_imatge.setColorFilter(ContextCompat.getColor(this, R.color.aqua));
-        //Creem el filtre cada cop que apreti canviara el filtre
-        /*if(colors.equals("SF")){
-            iv_imatge.setColorFilter((-10000000), PorterDuff.Mode.LIGHTEN);
-            colors = "LOWGRY";
-        } else if(colors.equals("LOWGRY")){
-            iv_imatge.setColorFilter(Color.DKGRAY, PorterDuff.Mode.LIGHTEN);
-            colors = "DKGRAY";
-        } else if(colors.equals("DKGRAY")){
-            iv_imatge.setColorFilter(Color.GRAY, PorterDuff.Mode.LIGHTEN);
-            colors = "GRAY";
-        } else if(colors.equals("GRAY")){
-            iv_imatge.setColorFilter(Color.LTGRAY, PorterDuff.Mode.LIGHTEN);
-            colors = "LTGRAY";
-        } else if(colors.equals("LTGRAY")){
-            iv_imatge.setColorFilter(Color.RED, PorterDuff.Mode.LIGHTEN);
-            colors = "RED";
-        } else if(colors.equals("RED")){
-            iv_imatge.setColorFilter((-11000000), PorterDuff.Mode.LIGHTEN);
-            colors = "BROWN";
-        } else if(colors.equals("BROWN")){
-            iv_imatge.setColorFilter(Color.BLACK, PorterDuff.Mode.LIGHTEN);
-            colors = "SF";
-        }*/
+        if(iv_imatge.getColorFilter() == null)
+        {
+            iv_imatge.setColorFilter(ContextCompat.getColor(this, R.color.GrocTransparent));
+        }
+        else
+        {
+            iv_imatge.setColorFilter(ContextCompat.getColor(this, R.color.AquaTransparent));
+        }
+        //iv_imatge.setColorFilter(ContextCompat.getColor(this, R.color.GrocTransparent));
+
+        btn_save.setOnClickListener(v -> {
+            if(checkPermissions())
+            {
+                //try {
+                    //saveImageToGalery();
+                    saveImage();
+                /*} catch (IOException e) {
+                    e.printStackTrace();
+                }*/
+            } else {
+                askForPermissions();
+            }
+        });
 
 
     }
@@ -199,8 +181,6 @@ public class MainActivity extends AppCompatActivity
     private boolean checkPermissions() {
         return (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
                 && ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
-                /*&& ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                && ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED*/
         );
     }
 
@@ -211,8 +191,6 @@ public class MainActivity extends AppCompatActivity
                         Manifest.permission.WRITE_EXTERNAL_STORAGE,
                         Manifest.permission.READ_EXTERNAL_STORAGE,
                         Manifest.permission.MANAGE_EXTERNAL_STORAGE,
-                        /*Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION*/
                 }, 3);
     }
 
@@ -309,21 +287,61 @@ public class MainActivity extends AppCompatActivity
         this.sendBroadcast(mediaScanIntent);
     }
 
-    /*public void saveImage()
+    public void saveImage()
     {
         try {
+            //bitmap for the image
             Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uriPhotoImage);
-            File file = new File(currentPhotoPath);
+            //file path to save
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(new Date());
+            String imageFileName = "NEW_JPEG_" + timeStamp + "_";
+            //File file = new File(currentPhotoPath);
+            File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES+File.separator+this.getPackageName()), imageFileName+".jpg");
+            //Fileoutputstream to write file
             FileOutputStream fOut = new FileOutputStream(file);
+            //compress bitmap to specified format
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
+            //flush the stream
             fOut.flush();
+            //close stream
             fOut.close();
+            //update image to gallery
             bitmap.recycle();
             refreshGallery();
+            Toast toast = Toast.makeText(this, "Imatge guardada", Toast.LENGTH_SHORT);
+            toast.show();
         } catch (Exception e) {
+            Toast toast = Toast.makeText(this, "Error en guardar la imatge", Toast.LENGTH_SHORT);
+            toast.show();
             e.printStackTrace();
         }
 
+    }
+
+
+    /*public void saveImageToGalery() throws IOException
+    {
+        //get bitmap from uri
+        Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uriPhotoImage);
+        //create a file to write bitmap data
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(new Date());
+        String imageFileName = "NEW_JPEG_" + timeStamp + "_";
+
+        //Save image to gallery
+        String savedImageURL = MediaStore.Images.Media.insertImage(
+                getContentResolver(),
+                bitmap,
+                imageFileName,
+                "Image of" + imageFileName
+        );
+
+        //Parse the gallery image url to uri
+        File file = new File(savedImageURL);
+        System.out.println("file: "+file);
+        //Parse the gallery image url to uri
+        Uri savedImageURI = Uri.parse(savedImageURL);
+        System.out.println("uri: "+savedImageURI);
+        Toast.makeText(this, "Image saved to gallery", Toast.LENGTH_SHORT).show();
     }*/
 
 }

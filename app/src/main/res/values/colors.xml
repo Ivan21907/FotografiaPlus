@@ -22,4 +22,9 @@
     <color name="navy">#FF000080</color>
     <color name="fuchsia">#FFFF00FF</color>
     <color name="purple">#FF800080</color>
+    <color name="NegreTransparent">#66000000</color>
+    <color name="BlancTransparent">#50FFFFFF</color>
+    <color name="AquaTransparent">#50FF</color>
+    <color name="GrocTransparent">#50FFFF00</color>
+
 </resources>
